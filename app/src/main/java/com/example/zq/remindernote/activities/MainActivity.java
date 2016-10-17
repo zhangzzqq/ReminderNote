@@ -49,7 +49,6 @@ public class MainActivity extends Activity {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         initEvent();
-
     }
 
     private void initEvent() {
