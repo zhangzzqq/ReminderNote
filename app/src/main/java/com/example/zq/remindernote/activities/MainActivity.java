@@ -7,11 +7,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.HomeAdapter;
 import com.example.zq.remindernote.utils.SPUtils;
+import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
 
@@ -70,6 +72,19 @@ public class MainActivity extends Activity {
                 App.aCache.put("isFirst","1");
             }
         });
+        
+        mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+                Toast.makeText(MainActivity.this,"dainjis",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        }));
 
     }
 
