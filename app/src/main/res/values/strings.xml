@@ -289,4 +289,8 @@
     <string name="clean_group_chat_history">确定删除群聊天记录吗</string>
     <string name="clean_discussion_chat_history">确定删除讨论组聊天记录吗</string>
     <string name="join_chat_room_error_toast">聊天室ID为空,请稍后重试</string>
+    <string name="yesterday">yesterday</string>
+    <string name="today">today</string>
+    <string name="tomorrow">tomorrow</string>
+    <string name="history">history</string>
 </resources>

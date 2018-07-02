@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="120dp"
     android:background="@drawable/item_bg"
     android:orientation="vertical">
-    
+
     <TextView
         android:id="@+id/tv_display_note"
         android:layout_width="match_parent"
-        android:layout_height="100dp"/>
+        android:layout_height="100dp" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tv_date"
+        android:singleLine="true"
+        android:textSize="12sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        tools:text="2018-11-14-08:06:12"
+
+        />
+
+
+</RelativeLayout>
