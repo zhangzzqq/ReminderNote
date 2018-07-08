@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.example.zq.remindernote.utils.ACache;
 
+import org.litepal.LitePal;
+
 /**
  * Created by stevenZhang on 2016/9/25.
  */
@@ -15,6 +17,6 @@ public class App  extends Application{
         super.onCreate();
 
         aCache = ACache.get(this);
-
+        LitePal.initialize(this);
     }
 }

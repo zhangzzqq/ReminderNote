@@ -7,12 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
-import com.example.zq.remindernote.beans.MessageContent;
+import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.utils.DateUtils;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,7 +39,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
 
-//        Log.d("NoteDataAdapter", datas.size() + "");
     }
 
     public void refresh(List<MessageContent> datas){
@@ -50,25 +47,18 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
    }
 
     public void addData(int position,String input){
+       //存入数据库
         currentDate = DateUtils.getCurrentTime();
-
         MessageContent messageContent = new MessageContent();
         messageContent.setContent(input);
         messageContent.setDailyDate(currentDate);
         messageContent.setContentDate(currentDate);
+        messageContent.save();
 
-
-        StringBuilder builder = new StringBuilder();
+        //刷新列表
         mDatas.add(position,messageContent);
         notifyDataSetChanged();
-        App.aCache.remove("value");
-        Iterator iterator = mDatas.iterator();
-        while (iterator.hasNext()){
-            builder.append(iterator.next());
-            builder.append(",");
-        }
-        App.aCache.put("value",builder.toString());
-//        notifyItemInserted(position);
+
     }
 
     //创建viewholder
@@ -119,7 +109,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     @Override
     public int getItemCount()
     {
-//        Log.d("NoteDataAdapter","mDatas.size()==="+mDatas.size());
         return mDatas!=null? mDatas.size():0;
 
 
@@ -127,7 +116,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
 
     public void addData(int position)
     {
-//        mDatas.add(position, "Insert One");
         notifyItemInserted(position);
     }
 

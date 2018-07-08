@@ -1,17 +1,19 @@
-package com.example.zq.remindernote.beans;
+package com.example.zq.remindernote.db;
 
+import org.litepal.crud.LitePalSupport;
 /**
  * ClassName:
  * Description:
  * Create by: steven
  * Date: 2018/6/29
  */
-public class MessageContent {
+public class MessageContent extends LitePalSupport {
 
     private String dailyDate;
     private String content ;
     private String contentDate;
-    private String contentId,contentTitle;
+    private String contentId;
+    private String contentTitle;
 
     public String getDailyDate() {
         return dailyDate;

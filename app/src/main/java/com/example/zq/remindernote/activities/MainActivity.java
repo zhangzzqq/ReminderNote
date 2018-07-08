@@ -17,6 +17,8 @@ import com.example.zq.remindernote.fragment.TodayFragment;
 import com.example.zq.remindernote.fragment.TomorrowFragment;
 import com.example.zq.remindernote.fragment.YesterdayFragment;
 
+import org.litepal.LitePal;
+
 
 public class MainActivity extends AppCompatActivity {
     //测试
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
 
         tabHost.setCurrentTab(1);
+        LitePal.getDatabase();//创建表
     }
 
 
