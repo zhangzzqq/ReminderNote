@@ -49,9 +49,10 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     public void addData(int position,String input){
        //存入数据库
         currentDate = DateUtils.getCurrentTime();
+       String  currentDay = DateUtils.getCurrentDay();
         MessageContent messageContent = new MessageContent();
         messageContent.setContent(input);
-        messageContent.setDailyDate(currentDate);
+        messageContent.setDailyDate(currentDay);
         messageContent.setContentDate(currentDate);
         messageContent.save();
 
@@ -79,31 +80,30 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         holder.tv.setText(messageContent.getContent());
         holder.tvDate.setText(messageContent.getContentDate());
 
-//        // 如果设置了回调，则设置点击事件
-//        if (mOnItemClickLitener != null)
-//        {
-//            holder.itemView.setOnClickListener(new View.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(View v)
-//                {
-//                    int pos = holder.getLayoutPosition();
-//                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
-//                }
-//            });
-//
-//            holder.itemView.setOnLongClickListener(new View.OnLongClickListener()
-//            {
-//                @Override
-//                public boolean onLongClick(View v)
-//                {
-//                    int pos = holder.getLayoutPosition();
-//                    mOnItemClickLitener.onItemLongClick(holder.itemView, pos);
-//                    removeData(pos);
-//                    return false;
-//                }
-//            });
-//        }
+        // 如果设置了回调，则设置点击事件
+        if (mOnItemClickLitener != null)
+        {
+            holder.itemView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    int pos = holder.getLayoutPosition();
+                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
+                }
+            });
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener()
+            {
+                @Override
+                public boolean onLongClick(View v)
+                {
+                    int pos = holder.getLayoutPosition();
+                    mOnItemClickLitener.onItemLongClick(holder.itemView, pos);
+                    return false;
+                }
+            });
+        }
     }
 
     @Override
@@ -138,4 +138,10 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
 
         }
     }
+
+
+    public List<MessageContent>  getList(){
+        return mDatas;
+    }
+
 }

@@ -13,13 +13,17 @@ import android.widget.Toast;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.utils.DateUtils;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
 
 import org.litepal.LitePal;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,14 +39,16 @@ public class TodayFragment extends BaseFragment {
     private NoteDataAdapter mAdapter;
     private XEditText mTvWriteNOte;
     private List<MessageContent> mList = new ArrayList();
-
+    private String currentDay;
+    private SimpleDateFormat formatter;
+    private Date currentDate;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-         view  = inflater.inflate(R.layout.fragment_yesterday,container,false);
+        view = inflater.inflate(R.layout.fragment_yesterday, container, false);
 
         initView();
 
@@ -67,9 +73,15 @@ public class TodayFragment extends BaseFragment {
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
-
     private void initData() {
 
+        currentDay = DateUtils.getCurrentDay();
+        formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            currentDate = formatter.parse(currentDay);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         initMessageContent();
 
         clickAddNote();
@@ -77,28 +89,47 @@ public class TodayFragment extends BaseFragment {
     }
 
 
-
     private void initMessageContent() {
+
+
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mList.clear();
+
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
-                    mList.add(message);
+                    String strDate = message.getContentDate();
+                    try {
+                        Date date = formatter.parse(strDate);
+                        if (date.equals(currentDate)) {
+                            mList.add(message);
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         mAdapter.notifyDataSetChanged();
+
                     }
                 });
 
 
             }
         }).start();
+
+
+    }
+
+    private void compareDay() {
 
 
     }
@@ -113,13 +144,13 @@ public class TodayFragment extends BaseFragment {
                 String strNote = mTvWriteNOte.getText().toString();
                 mAdapter.addData(0, strNote);
 
-
 //                SPUtils.put(getActivity(), "isFirst", "1");
 //                App.aCache.put("isFirst", "1");
 
 
             }
         });
+
 
         mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
             @Override
@@ -135,7 +166,6 @@ public class TodayFragment extends BaseFragment {
         }));
 
     }
-
 
 
 }

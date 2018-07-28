@@ -14,13 +14,17 @@ import android.widget.Toast;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.utils.DateUtils;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
 
 import org.litepal.LitePal;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,13 +35,13 @@ import java.util.List;
  */
 public class TomorrowFragment extends BaseFragment {
 
-
     private View view;
     private RecyclerView mRecyclerView;
     private NoteDataAdapter mAdapter;
     private XEditText mTvWriteNOte;
     private List<MessageContent> mList = new ArrayList();
-
+    private SimpleDateFormat formatter;
+    private Date currentDate;
 
     @Nullable
     @Override
@@ -71,12 +75,19 @@ public class TomorrowFragment extends BaseFragment {
 
     private void initData() {
 
+        String currentDay = DateUtils.getCurrentDay();
+        formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            currentDate = formatter.parse(currentDay);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         initMessageContent();
 
         clickAddNote();
 
     }
-
 
     private void initMessageContent() {
 
@@ -86,7 +97,17 @@ public class TomorrowFragment extends BaseFragment {
                 mList.clear();
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
-                    mList.add(message);
+
+                    String strDate = message.getContentDate();
+                    try {
+                        Date date = formatter.parse(strDate);
+                        if(DateUtils.differentDaysByMillisecond(date,currentDate)==1){
+                            mList.add(message);
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 getActivity().runOnUiThread(new Runnable() {

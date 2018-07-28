@@ -1,5 +1,7 @@
 package com.example.zq.remindernote.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,12 +10,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
-import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
 
@@ -74,6 +74,9 @@ public class HistoryFragment extends BaseFragment {
 
         clickAddNote();
 
+
+
+
     }
 
 
@@ -112,28 +115,67 @@ public class HistoryFragment extends BaseFragment {
                 String strNote = mTvWriteNOte.getText().toString();
                 mAdapter.addData(0, strNote);
 
-
 //                SPUtils.put(getActivity(), "isFirst", "1");
 //                App.aCache.put("isFirst", "1");
+
+            }
+        });
+
+
+        mAdapter.setOnItemClickLitener(new NoteDataAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+            }
+
+            @Override
+            public void onItemLongClick(View view, final int position) {
+
+                AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(getContext());
+                alertDialogBuilder.setTitle("删除");
+                alertDialogBuilder.setMessage("确定删除吗？");
+
+                alertDialogBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        MessageContent messageContent=  mAdapter.getList().get(position);
+                        mAdapter.removeData(position);
+                        LitePal.deleteAll(MessageContent.class,"content=? and contentDate =?",messageContent.getContent(),messageContent.getContentDate());
+
+
+                    }
+                });
+
+                alertDialogBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                alertDialogBuilder.create().show();
 
 
             }
         });
 
-        mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-
-                Toast.makeText(getActivity(), "dainjis", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
-
-            }
-        }));
+//        mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(View view, int position) {
+//
+//            }
+//
+//            @Override
+//            public void onItemLongClick(View view, int position) {
+//
+//
+//            }
+//        }));
 
     }
+
+
+
 
 
 }
