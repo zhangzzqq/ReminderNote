@@ -1,6 +1,8 @@
 package com.example.zq.remindernote.fragment;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -9,7 +11,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
@@ -146,7 +147,24 @@ public class TomorrowFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position) {
 
-                Toast.makeText(getActivity(), "dainjis", Toast.LENGTH_SHORT).show();
+                MessageContent messageContent = mList.get(position);
+                String strContent = messageContent.getContent();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("内容详情");
+                builder.setMessage(strContent);
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                builder.create().show();
             }
 
             @Override

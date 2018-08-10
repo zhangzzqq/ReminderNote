@@ -18,6 +18,7 @@ import com.example.zq.remindernote.activities.MainActivity;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.interfaces.SaveData;
+import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
 
@@ -182,18 +183,35 @@ public class HistoryFragment extends BaseFragment {
             }
         });
 
-//        mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//
-//            }
-//
-//            @Override
-//            public void onItemLongClick(View view, int position) {
-//
-//
-//            }
-//        }));
+        mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                MessageContent messageContent = mList.get(position);
+                String strContent = messageContent.getContent();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("内容详情");
+                builder.setMessage(strContent);
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                builder.create().show();
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+
+            }
+        }));
 
     }
 
