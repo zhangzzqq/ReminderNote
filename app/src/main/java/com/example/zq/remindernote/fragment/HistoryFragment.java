@@ -1,5 +1,6 @@
 package com.example.zq.remindernote.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -10,10 +11,13 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.zq.remindernote.R;
+import com.example.zq.remindernote.activities.MainActivity;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.interfaces.SaveData;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
 
@@ -32,19 +36,25 @@ public class HistoryFragment extends BaseFragment {
 
 
     private View view;
+    private ImageView ivAdd;
     private RecyclerView mRecyclerView;
     private NoteDataAdapter mAdapter;
     private XEditText mTvWriteNOte;
     private List<MessageContent> mList = new ArrayList();
+    private SaveData saveData;
 
 
-
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        saveData = (MainActivity) activity;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-         view = inflater.inflate(R.layout.fragment_yesterday, container, false);
+        view = inflater.inflate(R.layout.fragment_history, container, false);
 
         initView();
 
@@ -59,6 +69,8 @@ public class HistoryFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
+        ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
+
         mAdapter = new NoteDataAdapter(getActivity(), mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
@@ -73,9 +85,6 @@ public class HistoryFragment extends BaseFragment {
         initMessageContent();
 
         clickAddNote();
-
-
-
 
     }
 
@@ -103,6 +112,23 @@ public class HistoryFragment extends BaseFragment {
         }).start();
 
 
+        ivAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //保存历史数据
+                List list = new ArrayList();
+                int i=1;
+                List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
+                for (MessageContent message : messageContents) {
+                    String StrContent = message.getContent() + "  " + message.getContentDate();
+                    list.add(""+i+". "+StrContent);
+                    i++;
+                }
+                saveData.saveContent(list.toString());//系统默认转为String有逗号
+            }
+        });
+
+
     }
 
 
@@ -114,9 +140,6 @@ public class HistoryFragment extends BaseFragment {
 
                 String strNote = mTvWriteNOte.getText().toString();
                 mAdapter.addData(0, strNote);
-
-//                SPUtils.put(getActivity(), "isFirst", "1");
-//                App.aCache.put("isFirst", "1");
 
             }
         });
@@ -131,16 +154,16 @@ public class HistoryFragment extends BaseFragment {
             @Override
             public void onItemLongClick(View view, final int position) {
 
-                AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(getContext());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
                 alertDialogBuilder.setTitle("删除");
                 alertDialogBuilder.setMessage("确定删除吗？");
 
                 alertDialogBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        MessageContent messageContent=  mAdapter.getList().get(position);
+                        MessageContent messageContent = mAdapter.getList().get(position);
                         mAdapter.removeData(position);
-                        LitePal.deleteAll(MessageContent.class,"content=? and contentDate =?",messageContent.getContent(),messageContent.getContentDate());
+                        LitePal.deleteAll(MessageContent.class, "content=? and contentDate =?", messageContent.getContent(), messageContent.getContentDate());
 
 
                     }
@@ -173,9 +196,6 @@ public class HistoryFragment extends BaseFragment {
 //        }));
 
     }
-
-
-
 
 
 }

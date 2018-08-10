@@ -1,13 +1,14 @@
 package com.example.zq.remindernote.activities;
 
-import android.os.Build;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,11 +17,12 @@ import com.example.zq.remindernote.fragment.HistoryFragment;
 import com.example.zq.remindernote.fragment.TodayFragment;
 import com.example.zq.remindernote.fragment.TomorrowFragment;
 import com.example.zq.remindernote.fragment.YesterdayFragment;
+import com.example.zq.remindernote.interfaces.SaveData;
 
 import org.litepal.LitePal;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SaveData {
     //测试
     private FragmentTabHost tabHost;
     private static final String TAG = "MainActivity";
@@ -36,13 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Window window = getWindow();
-            // Translucent status bar
-            window.setFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            Window window = getWindow();
+//            // Translucent status bar
+//            window.setFlags(
+//                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+//                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//        }
 
         tabHost = (FragmentTabHost) findViewById(R.id.fragment_tabhost);
         //关联碎片
@@ -98,4 +100,95 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-} 
+
+
+    /**
+     * 弹出分享列表
+     * @param content
+     */
+    private void showShareDialog(final String content) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("选择分享类型");
+        builder.setItems(new String[]{"邮件", "短信", "其他"}, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                dialog.dismiss();
+                switch (which) {
+                    case 0:    //邮件
+                        sendMail(content);
+                        break;
+
+                    case 1:    //短信
+                        sendSMS(content);
+                        break;
+
+                    case 3:    //调用系统分享
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+                        intent.putExtra(Intent.EXTRA_TEXT, content);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(Intent.createChooser(intent, "share"));
+                        break;
+
+                    default:
+                        break;
+                }
+
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+
+    /**
+     * 发送邮件
+     *
+     * @@param emailBody
+     */
+    private void sendMail(String emailUrl) {
+        Intent email = new Intent(android.content.Intent.ACTION_SEND);
+        email.setType("plain/text");
+
+        String emailBody =  emailUrl;
+        //邮件主题
+        email.putExtra(android.content.Intent.EXTRA_SUBJECT, "便签");
+        //邮件内容
+        email.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
+
+        startActivityForResult(Intent.createChooser(email, "请选择邮件发送内容"), 1001);
+    }
+
+
+    /**
+     * 发短信
+     */
+    private void sendSMS(String webUrl) {
+        String smsBody =  webUrl;
+        Uri smsToUri = Uri.parse("smsto:");
+        Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
+        //sendIntent.putExtra("address", "123456"); // 电话号码，这行去掉的话，默认就没有电话
+        //短信内容
+        sendIntent.putExtra("sms_body", smsBody);
+        sendIntent.setType("vnd.android-dir/mms-sms");
+        startActivityForResult(sendIntent, 1002);
+    }
+
+
+    @Override
+    public void saveContent(String content) {
+
+        showShareDialog(content);
+    }
+
+
+
+}

@@ -1,26 +1,8 @@
 <resources>
-    <string name="app_name">ReminderNote</string>
+    <string name="app_name">备忘录</string>
     <string name="action_settings">Settings</string>
 
-
     <!--主页-->
-    <string name="main_name">融云</string>
-    <string name="main_conversation">会话</string>
-    <string name="main_group">广场</string>
-    <string name="main_chatroom">通讯录</string>
-    <string name="main_customer">意见反馈</string>
-    <string name="private_chat">发起聊天</string>
-    <string name="group_chat">创建群组</string>
-    <string name="add_contacts">添加好友</string>
-    <string name="add_select_group">创建群组</string>
-    <string name="set_personal_information">我的账号</string>
-    <string name="set_news_reminded">新消息提醒</string>
-    <string name="set_privacy">隐私</string>
-    <string name="set_set">设置</string>
-    <string name="set_rongcloud">关于 SealTalk</string>
-    <string name="set_logout">注销</string>
-    <string name="de_save">"保存"</string>
-
     <string name="no_read_message">"···"</string>
 
     <!--register activity -->

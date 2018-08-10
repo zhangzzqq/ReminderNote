@@ -47,7 +47,7 @@ public class TomorrowFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-         view = inflater.inflate(R.layout.fragment_yesterday, container, false);
+         view = inflater.inflate(R.layout.fragment_tomorrow, container, false);
 
         initView();
 

@@ -4,17 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:padding="16dp"
-        android:text="备忘录"
-        android:textSize="16sp" />
 
     <com.example.zq.remindernote.widget.XEditText
         android:id="@+id/tv_write_note"
         android:text="12334"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
