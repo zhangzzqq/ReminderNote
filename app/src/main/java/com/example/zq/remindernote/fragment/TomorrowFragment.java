@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,12 +134,10 @@ public class TomorrowFragment extends BaseFragment {
             public void onDrawableRightClick(View view) {
 
                 String strNote = mTvWriteNOte.getText().toString();
-                mAdapter.addData(0, strNote);
-
-
-//                SPUtils.put(getActivity(), "isFirst", "1");
-//                App.aCache.put("isFirst", "1");
-
+                if(!TextUtils.isEmpty(strNote)){
+                    mAdapter.addData(0, strNote);
+                    mTvWriteNOte.setText("");
+                }
 
             }
         });
@@ -168,12 +167,29 @@ public class TomorrowFragment extends BaseFragment {
             }
 
             @Override
-            public void onItemLongClick(View view, int position) {
+            public void onItemLongClick(View view, final int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("任务");
+                builder.setMessage("确认已经完成吗？");
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        mAdapter.setItemFinish(position);
+                    }
+                });
+
+                builder.create().show();
             }
         }));
 
     }
+
 
 
 }

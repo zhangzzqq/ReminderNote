@@ -7,10 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
@@ -25,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -66,7 +69,9 @@ public class TodayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        mAdapter = new NoteDataAdapter(getActivity(), mList);
+        HashMap map = (HashMap) App.aCache.getAsObject("todaymap");
+
+        mAdapter = new NoteDataAdapter(getActivity(), mList,map );
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
                 StaggeredGridLayoutManager.VERTICAL));
@@ -137,8 +142,10 @@ public class TodayFragment extends BaseFragment {
             public void onDrawableRightClick(View view) {
 
                 String strNote = mTvWriteNOte.getText().toString();
-                mAdapter.addData(0, strNote);
-
+                if(!TextUtils.isEmpty(strNote)){
+                    mAdapter.addData(0, strNote);
+                    mTvWriteNOte.setText("");
+                }
 
             }
         });
@@ -174,12 +181,40 @@ public class TodayFragment extends BaseFragment {
             }
 
             @Override
-            public void onItemLongClick(View view, int position) {
+            public void onItemLongClick(View view, final int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("任务");
+                builder.setMessage("确认已经完成吗？");
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
+                    }
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        mAdapter.setItemFinish(position);
+                    }
+                });
+
+                builder.create().show();
             }
         }));
 
     }
 
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(mAdapter!=null&&mAdapter.getFinishMap()!=null){
+
+           HashMap map= mAdapter.getFinishMap();
+
+            App.aCache.put("todaymap",map);
+
+        }
+
+    }
 }

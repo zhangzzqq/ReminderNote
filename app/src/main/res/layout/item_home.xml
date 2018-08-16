@@ -13,14 +13,26 @@
 
     <TextView
         android:id="@+id/tv_date"
-        android:singleLine="true"
-        android:textSize="12sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:singleLine="true"
+        android:textSize="12sp"
         tools:text="2018-11-14-08:06:12"
 
         />
 
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/ivFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/finish_the_work" />
+
 
 </RelativeLayout>
+
+
+
