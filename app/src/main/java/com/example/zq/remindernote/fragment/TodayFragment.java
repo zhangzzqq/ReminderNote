@@ -143,7 +143,7 @@ public class TodayFragment extends BaseFragment {
 
                 String strNote = mTvWriteNOte.getText().toString();
                 if(!TextUtils.isEmpty(strNote)){
-                    mAdapter.addData(0, strNote);
+                    mAdapter.addData(mAdapter.getItemCount(), strNote);
                     mTvWriteNOte.setText("");
                 }
 

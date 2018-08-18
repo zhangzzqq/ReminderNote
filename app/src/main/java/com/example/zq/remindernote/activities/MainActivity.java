@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements SaveData {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        App.aCache.clear();
         initView();
         initData();
     }

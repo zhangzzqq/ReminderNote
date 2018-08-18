@@ -17,14 +17,19 @@ import java.util.List;
 
 /**
  * Created by stevenzhang on 2016/9/19 0019.
+ *
+ *  记住选择的状态
+ *
+ *  hahmap 来保存多选和记住多选（用到了Aache 文件缓存策略）
+ *
+ *  用时间详情作为key,保证内容唯一性
+ *
  */
 public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyViewHolder> {
     private List<MessageContent> mDatas;
     private LayoutInflater mInflater;
-    private String currentDate;
     private int finishPosition = -1;
-    private  HashMap<Integer, Boolean> hashMap = new HashMap<>();
-
+    private HashMap<String, Boolean> hashMap = new HashMap<>();
 
     public interface OnItemClickLitener {
         void onItemClick(View view, int position);
@@ -44,18 +49,14 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
 
     }
 
-    public NoteDataAdapter(Context context, List<MessageContent> datas, HashMap map) {
+    public NoteDataAdapter(Context context, List<MessageContent> datas, HashMap<String, Boolean> map) {
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
-        if(map!=null){
-            this.hashMap =map;
+        if (map != null) {
+            this.hashMap = map;
         }
     }
 
-    public void refresh(List<MessageContent> datas) {
-        mDatas = datas;
-        notifyDataSetChanged();
-    }
 
     public void setItemFinish(int position) {
         finishPosition = position;
@@ -64,15 +65,15 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
 
     public void addData(int position, String input) {
         //存入数据库
-        currentDate = DateUtils.getCurrentTime();
+        String  currentDate = DateUtils.getCurrentTime();
         String currentDay = DateUtils.getCurrentDay();
         MessageContent messageContent = new MessageContent();
         messageContent.setContent(input);
         messageContent.setDailyDate(currentDay);
         messageContent.setContentDate(currentDate);
         messageContent.save();
-
         //刷新列表
+        finishPosition=-1;
         mDatas.add(position, messageContent);
         notifyDataSetChanged();
 
@@ -91,13 +92,15 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
-        if(finishPosition==position){
-            hashMap.put(position,true);
+        if (finishPosition == position) {
+            //记住选择完成的内容
+            hashMap.put(mDatas.get(position).getContentDate().replaceAll(" ", ""), true);
             holder.ivFinish.setVisibility(View.VISIBLE);
-        }else {
-            if(hashMap!=null&&hashMap.get(position)!=null&&hashMap.get(position)){
+        } else {
+            String strTime = mDatas.get(position).getContentDate().replaceAll(" ", "");
+            if (hashMap != null && hashMap.get(strTime) != null && hashMap.get(strTime)) {
                 holder.ivFinish.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.ivFinish.setVisibility(View.GONE);
             }
         }
@@ -165,7 +168,7 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     }
 
 
-    public  HashMap<Integer, Boolean> getFinishMap(){
+    public HashMap<String, Boolean> getFinishMap() {
 
         return hashMap;
     }
