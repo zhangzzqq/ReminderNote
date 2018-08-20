@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
@@ -100,7 +101,7 @@ public class TomorrowFragment extends BaseFragment {
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
 
-                    String strDate = message.getContentDate();
+                    String strDate = message.getDailyDate();
                     try {
                         Date date = formatter.parse(strDate);
                         if(DateUtils.differentDaysByMillisecond(date,currentDate)==1){
@@ -135,7 +136,7 @@ public class TomorrowFragment extends BaseFragment {
 
                 String strNote = mTvWriteNOte.getText().toString();
                 if(!TextUtils.isEmpty(strNote)){
-                    mAdapter.addData(0, strNote);
+                    mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.TOMORROW.getValue());
                     mTvWriteNOte.setText("");
                 }
 

@@ -16,6 +16,7 @@ import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
@@ -143,7 +144,7 @@ public class TodayFragment extends BaseFragment {
 
                 String strNote = mTvWriteNOte.getText().toString();
                 if(!TextUtils.isEmpty(strNote)){
-                    mAdapter.addData(mAdapter.getItemCount(), strNote);
+                    mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.TODADY.getValue());
                     mTvWriteNOte.setText("");
                 }
 

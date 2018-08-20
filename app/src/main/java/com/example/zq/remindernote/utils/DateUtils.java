@@ -1,6 +1,7 @@
 package com.example.zq.remindernote.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -10,6 +11,8 @@ import java.util.Date;
  * Date: 2018/7/2
  */
 public class DateUtils {
+
+
 
     public static String  getCurrentTime() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
@@ -21,6 +24,32 @@ public class DateUtils {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
         return df.format(new Date());
     }
+
+
+    /**
+     *    增加一天
+     *
+     */
+
+
+    public static String  AddOrDeleteOneDay( int dayNumber ) {
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, dayNumber);
+        return sf.format(c.getTime());
+
+    }
+
+    public static String  AddOrDeleteOneCurrentTime( int dayNumber ) {
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, dayNumber);
+        return sf.format(c.getTime());
+
+    }
+
+
+
 
 
 

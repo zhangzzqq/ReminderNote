@@ -63,14 +63,49 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         notifyDataSetChanged();
     }
 
-    public void addData(int position, String input) {
+    /**
+     *
+     *  昨天 今天 明天 的新增它的日期和时间是不一样的
+     *
+     * @param position
+     * @param input
+     * @param value
+     */
+    public void addData(int position, String input,String value) {
+
+        String currentDay = "";
+        String  currentTime = "";
+
         //存入数据库
-        String  currentDate = DateUtils.getCurrentTime();
-        String currentDay = DateUtils.getCurrentDay();
+        switch (value){
+
+            case "today":
+                currentDay = DateUtils.getCurrentDay();
+                currentTime = DateUtils.getCurrentTime();
+                break;
+
+
+            case "tomorrow":
+                currentDay = DateUtils.AddOrDeleteOneDay(1);
+
+                currentTime = DateUtils.AddOrDeleteOneCurrentTime(1);
+                break;
+
+            case "yesterday":
+                currentDay = DateUtils.AddOrDeleteOneDay(-1);
+                currentTime = DateUtils.AddOrDeleteOneCurrentTime(-1);
+
+
+                break;
+
+
+        }
+
+
         MessageContent messageContent = new MessageContent();
         messageContent.setContent(input);
         messageContent.setDailyDate(currentDay);
-        messageContent.setContentDate(currentDate);
+        messageContent.setContentDate(currentTime);
         messageContent.save();
         //刷新列表
         finishPosition=-1;

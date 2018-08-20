@@ -17,6 +17,7 @@ import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.activities.MainActivity;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.interfaces.SaveData;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
@@ -140,7 +141,7 @@ public class HistoryFragment extends BaseFragment {
             public void onDrawableRightClick(View view) {
 
                 String strNote = mTvWriteNOte.getText().toString();
-                mAdapter.addData(0, strNote);
+                mAdapter.addData(0, strNote, WhichDay.HISTORY.getValue());
 
             }
         });

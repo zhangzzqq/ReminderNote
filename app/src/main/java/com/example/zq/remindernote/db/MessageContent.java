@@ -9,11 +9,11 @@ import org.litepal.crud.LitePalSupport;
  */
 public class MessageContent extends LitePalSupport {
 
-    private String dailyDate;
+    private String dailyDate; //每天
     private String content ;
     private String contentDate;
     private String contentId;
-    private String contentTitle;
+    private String contentTitle; //内容详细时间
 
     public String getDailyDate() {
         return dailyDate;

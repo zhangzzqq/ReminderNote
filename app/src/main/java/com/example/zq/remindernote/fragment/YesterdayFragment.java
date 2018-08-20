@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
+import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
@@ -26,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -54,7 +57,6 @@ public class YesterdayFragment extends BaseFragment {
 
         initData();
 
-
         return view;
 
     }
@@ -63,7 +65,14 @@ public class YesterdayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        mAdapter = new NoteDataAdapter(getActivity(), mList);
+        //如果昨天没有缓存，则取今天的记录
+        HashMap map = (HashMap) App.aCache.getAsObject("yesterdaymap");
+        if (map == null) {
+            map = (HashMap) App.aCache.getAsObject("todaymap");
+        }
+
+        mAdapter = new NoteDataAdapter(getActivity(), mList, map);
+
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
                 StaggeredGridLayoutManager.VERTICAL));
@@ -97,10 +106,11 @@ public class YesterdayFragment extends BaseFragment {
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
 
-                    String strDate = message.getContentDate();
+                    String strDate = message.getDailyDate();
+                    //区别是哪一天的note
                     try {
                         Date date = formatter.parse(strDate);
-                        if(DateUtils.differentDaysByMillisecond(currentDate,date)==1){
+                        if (DateUtils.differentDaysByMillisecond(currentDate, date) == 1) {
                             mList.add(message);
                         }
 
@@ -131,8 +141,8 @@ public class YesterdayFragment extends BaseFragment {
             public void onDrawableRightClick(View view) {
 
                 String strNote = mTvWriteNOte.getText().toString();
-                if(!TextUtils.isEmpty(strNote)){
-                    mAdapter.addData(0, strNote);
+                if (!TextUtils.isEmpty(strNote)) {
+                    mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.YESTERDAY.getValue());
                     mTvWriteNOte.setText("");
                 }
 
@@ -186,6 +196,19 @@ public class YesterdayFragment extends BaseFragment {
 
             }
         }));
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mAdapter != null && mAdapter.getFinishMap() != null) {
+
+            HashMap map = mAdapter.getFinishMap();
+
+            App.aCache.put("yesterdaymap", map);
+
+        }
 
     }
 
