@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
+import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
@@ -66,9 +67,9 @@ public class YesterdayFragment extends BaseFragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
         //如果昨天没有缓存，则取今天的记录
-        HashMap map = (HashMap) App.aCache.getAsObject("yesterdaymap");
+        HashMap map = (HashMap) App.aCache.getAsObject(Constant.yesterdaymap);
         if (map == null) {
-            map = (HashMap) App.aCache.getAsObject("todaymap");
+            map = (HashMap) App.aCache.getAsObject(Constant.todaymap);
         }
 
         mAdapter = new NoteDataAdapter(getActivity(), mList, map);
@@ -206,7 +207,7 @@ public class YesterdayFragment extends BaseFragment {
 
             HashMap map = mAdapter.getFinishMap();
 
-            App.aCache.put("yesterdaymap", map);
+            App.aCache.put(Constant.yesterdaymap, map);
 
         }
 

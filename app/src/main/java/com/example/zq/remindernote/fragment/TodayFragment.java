@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.adapter.NoteDataAdapter;
+import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
@@ -70,7 +71,7 @@ public class TodayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        HashMap map = (HashMap) App.aCache.getAsObject("todaymap");
+        HashMap map = (HashMap) App.aCache.getAsObject(Constant.todaymap);
 
         mAdapter = new NoteDataAdapter(getActivity(), mList,map );
         mRecyclerView.setAdapter(mAdapter);
@@ -177,8 +178,6 @@ public class TodayFragment extends BaseFragment {
 
 
 
-
-
             }
 
             @Override
@@ -210,11 +209,8 @@ public class TodayFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         if(mAdapter!=null&&mAdapter.getFinishMap()!=null){
-
            HashMap map= mAdapter.getFinishMap();
-
-            App.aCache.put("todaymap",map);
-
+            App.aCache.put(Constant.todaymap,map);
         }
 
     }
