@@ -203,13 +203,13 @@ public class YesterdayFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mAdapter != null && mAdapter.getFinishMap() != null) {
-
-            HashMap map = mAdapter.getFinishMap();
-
-            App.aCache.put(Constant.yesterdaymap, map);
-
-        }
+//        if (mAdapter != null && mAdapter.getFinishMap() != null) {
+//
+//            HashMap map = mAdapter.getFinishMap();
+//
+//            App.aCache.put(Constant.yesterdaymap, map);
+//
+//        }
 
     }
 

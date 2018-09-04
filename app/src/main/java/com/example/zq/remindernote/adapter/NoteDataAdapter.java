@@ -1,5 +1,6 @@
 package com.example.zq.remindernote.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,7 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
+import com.example.zq.remindernote.activities.MainActivity;
+import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.utils.DateUtils;
 
@@ -30,6 +34,7 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     private LayoutInflater mInflater;
     private int finishPosition = -1;
     private HashMap<String, Boolean> hashMap = new HashMap<>();
+    private Activity mActivity;
 
     public interface OnItemClickLitener {
         void onItemClick(View view, int position);
@@ -43,15 +48,17 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         this.mOnItemClickLitener = mOnItemClickLitener;
     }
 
-    public NoteDataAdapter(Context context, List<MessageContent> datas) {
+    public NoteDataAdapter(Activity context, List<MessageContent> datas) {
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
+        this.mActivity = context;
 
     }
 
-    public NoteDataAdapter(Context context, List<MessageContent> datas, HashMap<String, Boolean> map) {
+    public NoteDataAdapter(Activity context, List<MessageContent> datas, HashMap<String, Boolean> map) {
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
+        this.mActivity = context;
         if (map != null) {
             this.hashMap = map;
         }
@@ -95,12 +102,8 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
                 currentDay = DateUtils.AddOrDeleteOneDay(-1);
                 currentTime = DateUtils.AddOrDeleteOneCurrentTime(-1);
 
-
                 break;
-
-
         }
-
 
         MessageContent messageContent = new MessageContent();
         messageContent.setContent(input);
@@ -131,6 +134,16 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
             //记住选择完成的内容
             hashMap.put(mDatas.get(position).getContentDate().replaceAll(" ", ""), true);
             holder.ivFinish.setVisibility(View.VISIBLE);
+           int tab = ((MainActivity)mActivity).getCurrentTab();
+            if(tab==1){
+                App.aCache.put(Constant.todaymap,hashMap);//时时保存记录
+            }else if(tab==0){
+                App.aCache.put(Constant.yesterdaymap,hashMap);//时时保存记录
+            }
+
+
+
+
         } else {
             String strTime = mDatas.get(position).getContentDate().replaceAll(" ", "");
             if (hashMap != null && hashMap.get(strTime) != null && hashMap.get(strTime)) {

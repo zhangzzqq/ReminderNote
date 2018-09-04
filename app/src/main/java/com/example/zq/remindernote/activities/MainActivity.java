@@ -190,5 +190,10 @@ public class MainActivity extends AppCompatActivity implements SaveData {
     }
 
 
+    public int getCurrentTab(){
+
+        return  tabHost.getCurrentTab();
+
+    }
 
 }
