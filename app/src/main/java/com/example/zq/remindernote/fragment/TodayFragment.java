@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,13 +107,17 @@ public class TodayFragment extends BaseFragment {
                 for (MessageContent message : messageContents) {
                     String strDate = message.getContentDate();
                     try {
-                        Date date = formatter.parse(strDate);
-                        if (date.equals(currentDate)) {
-                            mList.add(message);
+                        if(!TextUtils.isEmpty(strDate)){
+                            Date date = formatter.parse(strDate);
+                            if (date.equals(currentDate)) {
+                                mList.add(message);
+                            }
                         }
+
 
                     } catch (ParseException e) {
                         e.printStackTrace();
+                        Log.e("TodayFragment",e.toString());
                     }
 
                 }
@@ -135,11 +140,9 @@ public class TodayFragment extends BaseFragment {
 
 
     private void clickAddNote() {
-
         mTvWriteNOte.setDrawableRightListener(new XEditText.DrawableRightListener() {
             @Override
             public void onDrawableRightClick(View view) {
-
                 String strNote = mTvWriteNOte.getText().toString();
                 if(!TextUtils.isEmpty(strNote)){
                     mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.TODADY.getValue());
@@ -170,7 +173,6 @@ public class TodayFragment extends BaseFragment {
 
                     }
                 });
-
                 builder.create().show();
             }
 

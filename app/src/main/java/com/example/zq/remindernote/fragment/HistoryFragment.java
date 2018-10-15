@@ -87,12 +87,9 @@ public class HistoryFragment extends BaseFragment {
         initMessageContent();
 
         clickAddNote();
-
     }
 
-
     private void initMessageContent() {
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -112,7 +109,6 @@ public class HistoryFragment extends BaseFragment {
 
             }
         }).start();
-
 
         ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override

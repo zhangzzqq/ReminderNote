@@ -102,14 +102,16 @@ public class TomorrowFragment extends BaseFragment {
                 for (MessageContent message : messageContents) {
 
                     String strDate = message.getDailyDate();
-                    try {
-                        Date date = formatter.parse(strDate);
-                        if(DateUtils.differentDaysByMillisecond(date,currentDate)==1){
-                            mList.add(message);
-                        }
+                    if(!TextUtils.isEmpty(strDate)){
+                        try {
+                            Date date = formatter.parse(strDate);
+                            if(DateUtils.differentDaysByMillisecond(date,currentDate)==1){
+                                mList.add(message);
+                            }
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 

@@ -91,7 +91,6 @@ public class YesterdayFragment extends BaseFragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         initMessageContent();
 
         clickAddNote();
@@ -109,15 +108,18 @@ public class YesterdayFragment extends BaseFragment {
 
                     String strDate = message.getDailyDate();
                     //区别是哪一天的note
-                    try {
-                        Date date = formatter.parse(strDate);
-                        if (DateUtils.differentDaysByMillisecond(currentDate, date) == 1) {
-                            mList.add(message);
-                        }
+                    if(!TextUtils.isEmpty(strDate)){
+                        try {
+                            Date date = formatter.parse(strDate);
+                            if (DateUtils.differentDaysByMillisecond(currentDate, date) == 1) {
+                                mList.add(message);
+                            }
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
+
                 }
 
                 getActivity().runOnUiThread(new Runnable() {

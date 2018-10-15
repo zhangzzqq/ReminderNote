@@ -3,6 +3,7 @@ package com.example.zq.remindernote.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,9 @@ import com.example.zq.remindernote.activities.MainActivity;
 import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.utils.DateUtils;
+
+import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +56,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
         this.mActivity = context;
-
     }
 
     public NoteDataAdapter(Activity context, List<MessageContent> datas, HashMap<String, Boolean> map) {
@@ -108,6 +111,7 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         messageContent.setContent(input);
         messageContent.setDailyDate(currentDay);
         messageContent.setContentDate(currentTime);
+        messageContent.setContentId(currentTime.replaceAll(" ",""));//增加contentid
         messageContent.save();
         //刷新列表
         finishPosition=-1;
@@ -148,16 +152,49 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
                 App.aCache.put(Constant.yesterdaymap,hashMap);//时时保存记录
             }
 
-
-
-
-        } else {
-            String strTime = mDatas.get(position).getContentDate().replaceAll(" ", "");
-            if (hashMap != null && hashMap.get(strTime) != null && hashMap.get(strTime)) {
-                holder.ivFinish.setVisibility(View.VISIBLE);
+            /**
+             * 数据库保存
+             */
+            MessageContent messageContent = new MessageContent();
+            if (LitePal.isExist(MessageContent.class, "contentId = ?", mDatas.get(position).getContentDate().replaceAll(" ", ""))) {
+                //存在patientId,进行更新操作
+                messageContent.setIsFinish(1);
+                messageContent.updateAll("contentId=?",mDatas.get(position).getContentDate().replaceAll(" ", ""));
             } else {
-                holder.ivFinish.setVisibility(View.GONE);
+
+                /**
+                 *  这里是对勾选 进行操作
+                 *  如果用户勾选了，则说明肯定存在这个对象（文本），不可能不存在
+                 *
+                 *  如果不存在的话说明保存到数据库的时候出现了问题
+                 */
+//                // 不存在patientId，进行存储操作
+//                messageContent.setIsFinish(1);
+//                messageContent.save();
             }
+        } else {
+           String contentDate =  mDatas.get(position).getContentDate() ;
+            if(!TextUtils.isEmpty(contentDate)){
+                String strTime = contentDate.replaceAll(" ", "");
+                //map
+                if (hashMap != null && hashMap.get(strTime) != null && hashMap.get(strTime)) {
+                    holder.ivFinish.setVisibility(View.VISIBLE);
+                } else {
+                    //数据库
+                    List<MessageContent> messageContents =  LitePal.where("contentId = ?", strTime).find(MessageContent.class);
+                    if(messageContents!=null&&messageContents.size()>0){
+                        int isFinish = messageContents.get(0).getIsFinish();
+                        if(isFinish==1){
+                            holder.ivFinish.setVisibility(View.VISIBLE);
+                        }else {
+                            holder.ivFinish.setVisibility(View.GONE);
+                        }
+                    }else {
+                        holder.ivFinish.setVisibility(View.GONE);
+                    }
+                }
+            }
+
         }
 
         MessageContent messageContent = mDatas.get(position);
