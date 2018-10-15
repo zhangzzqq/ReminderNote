@@ -10,10 +10,19 @@ import org.litepal.crud.LitePalSupport;
 public class MessageContent extends LitePalSupport {
 
     private String dailyDate; //每天
-    private String content ;
-    private String contentDate;
-    private String contentId;
-    private String contentTitle; //内容详细时间
+    private String content ;//内容
+    private String contentDate;//内容日期   详细日期
+    private String contentId; //内容id
+    private String contentTitle; //内容title
+    private int  isFinish;//0没有完成 1完成
+
+    public int getIsFinish() {
+        return isFinish;
+    }
+
+    public void setIsFinish(int isFinish) {
+        this.isFinish = isFinish;
+    }
 
     public String getDailyDate() {
         return dailyDate;

@@ -98,13 +98,10 @@ public class TodayFragment extends BaseFragment {
 
 
     private void initMessageContent() {
-
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mList.clear();
-
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
                     String strDate = message.getContentDate();
@@ -175,9 +172,6 @@ public class TodayFragment extends BaseFragment {
                 });
 
                 builder.create().show();
-
-
-
             }
 
             @Override

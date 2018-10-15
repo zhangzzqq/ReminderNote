@@ -32,7 +32,7 @@ import java.util.List;
 public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyViewHolder> {
     private List<MessageContent> mDatas;
     private LayoutInflater mInflater;
-    private int finishPosition = -1;
+    private int finishPosition = -1;//是否完成
     private HashMap<String, Boolean> hashMap = new HashMap<>();
     private Activity mActivity;
 
@@ -94,7 +94,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
 
             case "tomorrow":
                 currentDay = DateUtils.AddOrDeleteOneDay(1);
-
                 currentTime = DateUtils.AddOrDeleteOneCurrentTime(1);
                 break;
 
@@ -127,6 +126,14 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     }
 
     //赋值
+
+    /**
+     *
+     * 保存勾选状态信息，之前是通过map来保存 ，然后通过App.aCache来记住保存的数据
+     *
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
@@ -181,8 +188,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     @Override
     public int getItemCount() {
         return mDatas != null ? mDatas.size() : 0;
-
-
     }
 
     public void addData(int position) {
@@ -215,9 +220,7 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         return mDatas;
     }
 
-
     public HashMap<String, Boolean> getFinishMap() {
-
         return hashMap;
     }
 }
