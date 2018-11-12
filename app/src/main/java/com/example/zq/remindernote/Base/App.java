@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.utils.ACache;
 import com.example.zq.remindernote.utils.DateUtils;
+import com.tencent.bugly.Bugly;
 
 import org.litepal.LitePal;
 
@@ -31,7 +32,7 @@ public class App extends Application {
 
         aCache = ACache.get(this);
         LitePal.initialize(this);
-
+        Bugly.init(getApplicationContext(), "bafd08ebde", false);
 
 //        /**
 //         *
