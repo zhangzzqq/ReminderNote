@@ -69,7 +69,7 @@ public class TomorrowFragment extends BaseFragment {
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
         mAdapter = new NoteDataAdapter(getActivity(), mList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
         mRecyclerView.addItemDecoration(new DividerGridItemDecoration(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -154,18 +154,6 @@ public class TomorrowFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("内容详情");
                 builder.setMessage(strContent);
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
                 builder.create().show();
             }
 
