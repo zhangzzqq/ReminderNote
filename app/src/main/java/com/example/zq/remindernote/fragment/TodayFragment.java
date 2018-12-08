@@ -74,9 +74,8 @@ public class TodayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        HashMap map = (HashMap) App.aCache.getAsObject(Constant.todaymap);
 
-        mAdapter = new NoteDataAdapter(getActivity(), mList,map );
+        mAdapter = new NoteDataAdapter(getActivity(), mList, WhichDay.getIntDay(WhichDay.TODADY.getValue()));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
@@ -115,8 +114,6 @@ public class TodayFragment extends BaseFragment {
                                 mList.add(message);
                             }
                         }
-
-
                     } catch (ParseException e) {
                         e.printStackTrace();
                         Log.e("TodayFragment",e.toString());
@@ -136,11 +133,7 @@ public class TodayFragment extends BaseFragment {
 
             }
         }).start();
-
-
     }
-
-
     private void clickAddNote() {
         mTvWriteNOte.setDrawableRightListener(new XEditText.DrawableRightListener() {
             @Override
@@ -164,6 +157,17 @@ public class TodayFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("内容详情");
                 builder.setMessage(strContent);
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
                 builder.create().show();
             }
 
@@ -172,12 +176,12 @@ public class TodayFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("任务");
                 builder.setMessage("确认已经完成吗？");
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("未完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        mAdapter.setItemNoFinish(position);
                     }
-                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("已完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
