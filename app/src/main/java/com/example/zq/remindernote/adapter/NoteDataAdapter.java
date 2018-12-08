@@ -1,26 +1,20 @@
 package com.example.zq.remindernote.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
-import com.example.zq.remindernote.activities.MainActivity;
-import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.utils.DateUtils;
+import com.example.zq.remindernote.utils.TextUtilManager;
 
-import org.litepal.LitePal;
-import org.litepal.crud.DataSupport;
-
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,11 +30,12 @@ import java.util.List;
 public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyViewHolder> {
     private List<MessageContent> mDatas;
     private LayoutInflater mInflater;
-    private int finishPosition = -1;//是否完成
-    private HashMap<String, Boolean> hashMap = new HashMap<>();
     private Activity mActivity;
+    private int whichDay=-1;
+    private static final String TAG = NoteDataAdapter.class.getSimpleName();
 
     public interface OnItemClickLitener {
+
         void onItemClick(View view, int position);
 
         void onItemLongClick(View view, int position);
@@ -58,18 +53,30 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         this.mActivity = context;
     }
 
-    public NoteDataAdapter(Activity context, List<MessageContent> datas, HashMap<String, Boolean> map) {
+    public NoteDataAdapter(Activity context, List<MessageContent> datas, int intDay) {
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
         this.mActivity = context;
-        if (map != null) {
-            this.hashMap = map;
-        }
+        whichDay = intDay;
     }
 
-
+    /**
+     * 任务完成
+     * @param position
+     */
     public void setItemFinish(int position) {
-        finishPosition = position;
+        mDatas.get(position).setIsFinish(1);
+        setChangeStatus(position,true);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * 任务未完成
+     * @param position
+     */
+    public void setItemNoFinish(int position) {
+        mDatas.get(position).setIsFinish(0);
+        setChangeStatus(position,false);
         notifyDataSetChanged();
     }
 
@@ -82,28 +89,25 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
      * @param value
      */
     public void addData(int position, String input,String value) {
-
         String currentDay = "";
         String  currentTime = "";
-
+        int whichDay=0;
         //存入数据库
         switch (value){
-
             case "today":
                 currentDay = DateUtils.getCurrentDay();
                 currentTime = DateUtils.getCurrentTime();
+                whichDay = 2;
                 break;
-
-
             case "tomorrow":
                 currentDay = DateUtils.AddOrDeleteOneDay(1);
                 currentTime = DateUtils.AddOrDeleteOneCurrentTime(1);
+                whichDay = 3;
                 break;
-
             case "yesterday":
                 currentDay = DateUtils.AddOrDeleteOneDay(-1);
                 currentTime = DateUtils.AddOrDeleteOneCurrentTime(-1);
-
+                whichDay = 1;
                 break;
         }
 
@@ -112,92 +116,54 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         messageContent.setDailyDate(currentDay);
         messageContent.setContentDate(currentTime);
         messageContent.setContentId(currentTime.replaceAll(" ",""));//增加contentid
+        messageContent.setWhichDay(whichDay);
         messageContent.save();
-        //刷新列表
-        finishPosition=-1;
         mDatas.add(position, messageContent);
-        notifyDataSetChanged();
+//        notifyDataSetChanged();
+        notifyItemInserted(position);
+
+    }
+
+    /**
+     * 更新数据库状态
+     * @param position
+     */
+    public void setChangeStatus(int position,boolean flag){
+
+     MessageContent messageContent =  mDatas.get(position);
+        String id =  TextUtilManager.removeNullString(messageContent.getContentDate());
+        if(flag){
+            messageContent.setIsFinish(1);
+        }else {
+            messageContent.setToDefault("isFinish");
+        }
+      int backValue =  messageContent.updateAll("contentId = ?", id);
 
     }
 
     //创建viewholder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         MyViewHolder holder = new MyViewHolder(mInflater.inflate(
                 R.layout.item_home, parent, false));
         return holder;
     }
 
-    //赋值
-
     /**
-     *
      * 保存勾选状态信息，之前是通过map来保存 ，然后通过App.aCache来记住保存的数据
-     *
      * @param holder
      * @param position
      */
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-
-        if (finishPosition == position) {
-            //记住选择完成的内容
-            hashMap.put(mDatas.get(position).getContentDate().replaceAll(" ", ""), true);
+        Log.e(TAG,"holder.getAdapterPosition()=="+holder.getAdapterPosition());
+        MessageContent messageContent = mDatas.get(position);
+        if(messageContent.getIsFinish()==1){
             holder.ivFinish.setVisibility(View.VISIBLE);
-           int tab = ((MainActivity)mActivity).getCurrentTab();
-            if(tab==1){
-                App.aCache.put(Constant.todaymap,hashMap);//时时保存记录
-            }else if(tab==0){
-                App.aCache.put(Constant.yesterdaymap,hashMap);//时时保存记录
-            }
-
-            /**
-             * 数据库保存
-             */
-            MessageContent messageContent = new MessageContent();
-            if (LitePal.isExist(MessageContent.class, "contentId = ?", mDatas.get(position).getContentDate().replaceAll(" ", ""))) {
-                //存在patientId,进行更新操作
-                messageContent.setIsFinish(1);
-                messageContent.updateAll("contentId=?",mDatas.get(position).getContentDate().replaceAll(" ", ""));
-            } else {
-
-                /**
-                 *  这里是对勾选 进行操作
-                 *  如果用户勾选了，则说明肯定存在这个对象（文本），不可能不存在
-                 *
-                 *  如果不存在的话说明保存到数据库的时候出现了问题
-                 */
-//                // 不存在patientId，进行存储操作
-//                messageContent.setIsFinish(1);
-//                messageContent.save();
-            }
-        } else {
-           String contentDate =  mDatas.get(position).getContentDate() ;
-            if(!TextUtils.isEmpty(contentDate)){
-                String strTime = contentDate.replaceAll(" ", "");
-                //map
-                if (hashMap != null && hashMap.get(strTime) != null && hashMap.get(strTime)) {
-                    holder.ivFinish.setVisibility(View.VISIBLE);
-                } else {
-                    //数据库
-                    List<MessageContent> messageContents =  LitePal.where("contentId = ?", strTime).find(MessageContent.class);
-                    if(messageContents!=null&&messageContents.size()>0){
-                        int isFinish = messageContents.get(0).getIsFinish();
-                        if(isFinish==1){
-                            holder.ivFinish.setVisibility(View.VISIBLE);
-                        }else {
-                            holder.ivFinish.setVisibility(View.GONE);
-                        }
-                    }else {
-                        holder.ivFinish.setVisibility(View.GONE);
-                    }
-                }
-            }
-
+        }else {
+            holder.ivFinish.setVisibility(View.GONE);
         }
 
-        MessageContent messageContent = mDatas.get(position);
         holder.tv.setText(messageContent.getContent());
         holder.tvDate.setText(messageContent.getContentDate());
 
@@ -227,11 +193,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         return mDatas != null ? mDatas.size() : 0;
     }
 
-    public void addData(int position) {
-        notifyItemInserted(position);
-    }
-
-
     public void removeData(int position) {
         mDatas.remove(position);
         notifyItemRemoved(position);
@@ -242,7 +203,6 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         TextView tvDate;
         ImageView ivFinish;
 
-
         public MyViewHolder(View view) {
             super(view);
             tv = (TextView) view.findViewById(R.id.tv_display_note);
@@ -252,12 +212,12 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
         }
     }
 
-
     public List<MessageContent> getList() {
+        if(mDatas==null){
+            mDatas = new ArrayList<>();
+        }
         return mDatas;
     }
 
-    public HashMap<String, Boolean> getFinishMap() {
-        return hashMap;
-    }
+
 }

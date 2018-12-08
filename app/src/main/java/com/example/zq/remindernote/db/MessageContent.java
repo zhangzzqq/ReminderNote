@@ -8,13 +8,23 @@ import org.litepal.crud.LitePalSupport;
  * Date: 2018/6/29
  */
 public class MessageContent extends LitePalSupport {
-
     private String dailyDate; //每天
     private String content ;//内容
     private String contentDate;//内容日期   详细日期
     private String contentId; //内容id
     private String contentTitle; //内容title
-    private int  isFinish;//0没有完成 1完成
+    private int  isFinish;// 1完成 0没有完成
+    private int whichDay; //  前天 今天 明天 1 2 3
+
+
+
+    public int getWhichDay() {
+        return whichDay;
+    }
+
+    public void setWhichDay(int whichDay) {
+        this.whichDay = whichDay;
+    }
 
     public int getIsFinish() {
         return isFinish;

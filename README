@@ -6,3 +6,22 @@
 
 数据库存储作用于整个数据
 
+2018.12.7
+对项目进行结构调整，考虑到项目中用到cache和数据库存储，导致代码臃肿，现在只用数据库存储
+新增未完成
+      /**
+         * 同步数据
+         */
+        List<MessageContent>  messageContentList = null;
+        if(whichDay==WhichDay.getIntDay(WhichDay.TODADY.getValue())){
+            messageContentList = LitePal.where("whichDay = ?",String.valueOf(whichDay)).find(MessageContent.class);
+        }  else if(whichDay==WhichDay.getIntDay(WhichDay.TOMORROW.getValue())){
+            messageContentList = LitePal.where("whichDay = ?",String.valueOf(whichDay)).find(MessageContent.class);
+        }  else if(whichDay==WhichDay.getIntDay(WhichDay.YESTERDAY.getValue())){
+            messageContentList = LitePal.where("whichDay = ?",String.valueOf(whichDay)).find(MessageContent.class);
+        }
+
+//        mDatas.clear();
+//        mDatas.addAll(messageContentList);
+//        notifyDataSetChanged();
+

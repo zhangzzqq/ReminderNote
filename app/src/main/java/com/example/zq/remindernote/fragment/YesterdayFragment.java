@@ -66,14 +66,7 @@ public class YesterdayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        //如果昨天没有缓存，则取今天的记录
-        HashMap map = (HashMap) App.aCache.getAsObject(Constant.yesterdaymap);
-        if (map == null) {
-            map = (HashMap) App.aCache.getAsObject(Constant.todaymap);
-        }
-
-        mAdapter = new NoteDataAdapter(getActivity(), mList, map);
-
+        mAdapter = new NoteDataAdapter(getActivity(), mList, WhichDay.getIntDay(WhichDay.YESTERDAY.getValue()));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
@@ -161,6 +154,17 @@ public class YesterdayFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("内容详情");
                 builder.setMessage(strContent);
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
                 builder.create().show();
             }
 
@@ -170,12 +174,12 @@ public class YesterdayFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("任务");
                 builder.setMessage("确认已经完成吗？");
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("未完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        mAdapter.setItemNoFinish(position);
                     }
-                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("已完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
