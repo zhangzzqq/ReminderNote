@@ -97,6 +97,7 @@ public class TomorrowFragment extends BaseFragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                mList.clear();
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
                     String strDate = message.getDailyDate();
