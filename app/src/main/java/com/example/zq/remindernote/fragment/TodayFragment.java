@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import static org.litepal.LitePalApplication.getContext;
 
 /**
  * ClassName:
@@ -71,11 +74,10 @@ public class TodayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        HashMap map = (HashMap) App.aCache.getAsObject(Constant.todaymap);
 
-        mAdapter = new NoteDataAdapter(getActivity(), mList,map );
+        mAdapter = new NoteDataAdapter(getActivity(), mList, WhichDay.getIntDay(WhichDay.TODADY.getValue()));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
         mRecyclerView.addItemDecoration(new DividerGridItemDecoration(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -98,24 +100,23 @@ public class TodayFragment extends BaseFragment {
 
 
     private void initMessageContent() {
-
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mList.clear();
-
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
                     String strDate = message.getContentDate();
                     try {
-                        Date date = formatter.parse(strDate);
-                        if (date.equals(currentDate)) {
-                            mList.add(message);
+                        if(!TextUtils.isEmpty(strDate)){
+                            Date date = formatter.parse(strDate);
+                            if (date.equals(currentDate)) {
+                                mList.add(message);
+                            }
                         }
-
                     } catch (ParseException e) {
                         e.printStackTrace();
+                        Log.e("TodayFragment",e.toString());
                     }
 
                 }
@@ -132,17 +133,11 @@ public class TodayFragment extends BaseFragment {
 
             }
         }).start();
-
-
     }
-
-
     private void clickAddNote() {
-
         mTvWriteNOte.setDrawableRightListener(new XEditText.DrawableRightListener() {
             @Override
             public void onDrawableRightClick(View view) {
-
                 String strNote = mTvWriteNOte.getText().toString();
                 if(!TextUtils.isEmpty(strNote)){
                     mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.TODADY.getValue());
@@ -167,17 +162,13 @@ public class TodayFragment extends BaseFragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
-                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
-
                 builder.create().show();
-
-
-
             }
 
             @Override
@@ -185,12 +176,12 @@ public class TodayFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("任务");
                 builder.setMessage("确认已经完成吗？");
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("未完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        mAdapter.setItemNoFinish(position);
                     }
-                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("已完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 

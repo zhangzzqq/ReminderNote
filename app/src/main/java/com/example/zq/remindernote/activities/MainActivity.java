@@ -21,7 +21,6 @@ import com.example.zq.remindernote.interfaces.SaveData;
 
 import org.litepal.LitePal;
 
-
 public class MainActivity extends AppCompatActivity implements SaveData {
     //测试
     private FragmentTabHost tabHost;
