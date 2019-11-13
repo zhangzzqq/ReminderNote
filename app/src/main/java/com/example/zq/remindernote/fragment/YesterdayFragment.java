@@ -66,16 +66,9 @@ public class YesterdayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        //如果昨天没有缓存，则取今天的记录
-        HashMap map = (HashMap) App.aCache.getAsObject(Constant.yesterdaymap);
-        if (map == null) {
-            map = (HashMap) App.aCache.getAsObject(Constant.todaymap);
-        }
-
-        mAdapter = new NoteDataAdapter(getActivity(), mList, map);
-
+        mAdapter = new NoteDataAdapter(getActivity(), mList, WhichDay.getIntDay(WhichDay.YESTERDAY.getValue()));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
         mRecyclerView.addItemDecoration(new DividerGridItemDecoration(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -91,7 +84,6 @@ public class YesterdayFragment extends BaseFragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         initMessageContent();
 
         clickAddNote();
@@ -109,15 +101,18 @@ public class YesterdayFragment extends BaseFragment {
 
                     String strDate = message.getDailyDate();
                     //区别是哪一天的note
-                    try {
-                        Date date = formatter.parse(strDate);
-                        if (DateUtils.differentDaysByMillisecond(currentDate, date) == 1) {
-                            mList.add(message);
-                        }
+                    if(!TextUtils.isEmpty(strDate)){
+                        try {
+                            Date date = formatter.parse(strDate);
+                            if (DateUtils.differentDaysByMillisecond(currentDate, date) == 1) {
+                                mList.add(message);
+                            }
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
+
                 }
 
                 getActivity().runOnUiThread(new Runnable() {
@@ -164,13 +159,12 @@ public class YesterdayFragment extends BaseFragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
-                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
-
                 builder.create().show();
             }
 
@@ -180,12 +174,12 @@ public class YesterdayFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("任务");
                 builder.setMessage("确认已经完成吗？");
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("未完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        mAdapter.setItemNoFinish(position);
                     }
-                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("已完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 

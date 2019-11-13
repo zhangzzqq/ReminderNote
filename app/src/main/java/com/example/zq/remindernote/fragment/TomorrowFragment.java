@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 /**
  * ClassName:
  * Description:
@@ -67,9 +68,9 @@ public class TomorrowFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
-        mAdapter = new NoteDataAdapter(getActivity(), mList);
+        mAdapter = new NoteDataAdapter(getActivity(), mList,WhichDay.getIntDay(WhichDay.TOMORROW.getValue()));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
         mRecyclerView.addItemDecoration(new DividerGridItemDecoration(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -93,23 +94,23 @@ public class TomorrowFragment extends BaseFragment {
     }
 
     private void initMessageContent() {
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 mList.clear();
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
-
                     String strDate = message.getDailyDate();
-                    try {
-                        Date date = formatter.parse(strDate);
-                        if(DateUtils.differentDaysByMillisecond(date,currentDate)==1){
-                            mList.add(message);
-                        }
+                    if(!TextUtils.isEmpty(strDate)){
+                        try {
+                            Date date = formatter.parse(strDate);
+                            if(DateUtils.differentDaysByMillisecond(date,currentDate)==1){
+                                mList.add(message);
+                            }
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -157,13 +158,12 @@ public class TomorrowFragment extends BaseFragment {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
-                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 });
-
                 builder.create().show();
             }
 
@@ -172,12 +172,12 @@ public class TomorrowFragment extends BaseFragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("任务");
                 builder.setMessage("确认已经完成吗？");
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("未完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        mAdapter.setItemNoFinish(position);
                     }
-                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("已完成", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
