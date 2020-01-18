@@ -9,11 +9,11 @@
     <TextView
         android:id="@+id/tv_display_note"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/tv_date"
+        android:layout_height="wrap_content"
         android:ellipsize="end"
-        android:maxLines="6"
+        android:maxLines="5"
         android:text="@string/longtext" />
+
 
     <TextView
         android:id="@+id/tv_date"
@@ -25,6 +25,20 @@
         tools:text="2018-11-14-08:06:12"
 
         />
+
+    <TextView
+        android:id="@+id/tv_declare"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/tv_date"
+        android:maxLines="1"
+        android:text="重要不紧急"
+        android:textSize="12sp"
+
+        />
+
+
 
     <ImageView
         android:id="@+id/ivFinish"

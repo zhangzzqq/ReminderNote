@@ -15,6 +15,7 @@ public class MessageContent extends LitePalSupport {
     private String contentTitle; //内容title
     private int  isFinish;// 1完成 0没有完成
     private int whichDay; //  前天 今天 明天 1 2 3
+    private int level;//文件内容的重要性
 
 
 
@@ -74,5 +75,11 @@ public class MessageContent extends LitePalSupport {
         this.contentTitle = contentTitle;
     }
 
+    public int getLevel() {
+        return level;
+    }
 
+    public void setLevel(int level) {
+        this.level = level;
+    }
 }

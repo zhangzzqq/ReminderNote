@@ -19,6 +19,7 @@ import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.interfaces.SaveData;
+import com.example.zq.remindernote.utils.LevelUtil;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
@@ -76,6 +77,7 @@ public class HistoryFragment extends BaseFragment {
         ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
 
         mAdapter = new NoteDataAdapter(getActivity(), mList);
+
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
                 StaggeredGridLayoutManager.VERTICAL));
@@ -120,8 +122,10 @@ public class HistoryFragment extends BaseFragment {
                 int i=1;
                 List<MessageContent> messageContents = LitePal.findAll(MessageContent.class);
                 for (MessageContent message : messageContents) {
-                    String StrContent = message.getContent() + "  " + message.getContentDate();
-                    list.add(""+i+". "+StrContent);
+                    String StrContent = message.getContent()
+                            + "  " + message.getContentDate()
+                            + "  " + message.getLevel();
+                    list.add(i+". "+StrContent);
                     i++;
                 }
                 saveData.saveContent(list.toString());//系统默认转为String有逗号

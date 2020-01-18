@@ -2,6 +2,7 @@ package com.example.zq.remindernote.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
@@ -20,6 +26,7 @@ import com.example.zq.remindernote.common.Constant;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
+import com.example.zq.remindernote.utils.LevelUtil;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
@@ -51,7 +58,11 @@ public class TodayFragment extends BaseFragment {
     private String currentDay;
     private SimpleDateFormat formatter;
     private Date currentDate;
-
+    private EditText etWriteNote;
+    private Spinner spinnerTitle;
+    private static final String TAG = "TodayFragment";
+    private String mContentLevel = "A";
+    private ImageView mIvPlus;
 
     @Nullable
     @Override
@@ -74,6 +85,9 @@ public class TodayFragment extends BaseFragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
+        etWriteNote = (EditText) view.findViewById(R.id.et_write_note);
+        spinnerTitle = (Spinner) view.findViewById(R.id.spinner_title);
+        mIvPlus = (ImageView) view.findViewById(R.id.iv_plus);
 
         mAdapter = new NoteDataAdapter(getActivity(), mList, WhichDay.getIntDay(WhichDay.TODADY.getValue()));
         mRecyclerView.setAdapter(mAdapter);
@@ -108,7 +122,7 @@ public class TodayFragment extends BaseFragment {
                 for (MessageContent message : messageContents) {
                     String strDate = message.getContentDate();
                     try {
-                        if(!TextUtils.isEmpty(strDate)){
+                        if (!TextUtils.isEmpty(strDate)) {
                             Date date = formatter.parse(strDate);
                             if (date.equals(currentDate)) {
                                 mList.add(message);
@@ -116,10 +130,14 @@ public class TodayFragment extends BaseFragment {
                         }
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        Log.e("TodayFragment",e.toString());
+                        Log.e("TodayFragment", e.toString());
                     }
 
                 }
+
+                List<MessageContent> sortData = LevelUtil.sortContent(mList);
+                mList.clear();
+                mList.addAll(sortData);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -134,15 +152,45 @@ public class TodayFragment extends BaseFragment {
             }
         }).start();
     }
+
     private void clickAddNote() {
-        mTvWriteNOte.setDrawableRightListener(new XEditText.DrawableRightListener() {
+//        mTvWriteNote.setDrawableRightListener(new XEditText.DrawableRightListener() {
+//            @Override
+//            public void onDrawableRightClick(View view) {
+//                String strNote = mTvWriteNote.getText().toString();
+//                if (!TextUtils.isEmpty(strNote)) {
+//                    mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.TODADY.getValue());
+//                    mTvWriteNote.setText("");
+//                }
+//
+//            }
+//        });
+
+        mIvPlus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDrawableRightClick(View view) {
-                String strNote = mTvWriteNOte.getText().toString();
-                if(!TextUtils.isEmpty(strNote)){
-                    mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.TODADY.getValue());
-                    mTvWriteNOte.setText("");
+            public void onClick(View v) {
+                String strNote = etWriteNote.getText().toString();
+                if (!TextUtils.isEmpty(strNote)) {
+                    mAdapter.addData(mAdapter.getItemCount(), strNote, mContentLevel, WhichDay.TODADY.getValue());
+                    etWriteNote.setText("");
                 }
+
+            }
+        });
+
+
+        spinnerTitle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(SpinnerTestActivity.this, "点击了" + arr[position], Toast.LENGTH_SHORT).show();
+
+                mContentLevel = getActivity().getResources().getStringArray(R.array.level)[position];
+                Log.e(TAG, "mContentLevel==" + mContentLevel);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
@@ -152,11 +200,14 @@ public class TodayFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position) {
 
-                MessageContent messageContent = mList.get(position);
+                final EditText et = new EditText(getActivity());
+                final MessageContent messageContent = mList.get(position);
                 String strContent = messageContent.getContent();
+                et.setText(strContent);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("内容详情");
-                builder.setMessage(strContent);
+                builder.setView(et);
+//                builder.setMessage(strContent);
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -166,6 +217,13 @@ public class TodayFragment extends BaseFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        String strNote = et.getText().toString();
+                        if (!TextUtils.isEmpty(strNote)) {
+                            messageContent.setContent(strNote);
+                            messageContent.updateAll("contentId = ?", messageContent.getContentId());
+
+                            mAdapter.updateData(mAdapter.getItemCount(), strNote,messageContent.getContentId(), WhichDay.TODADY.getValue());
+                        }
                     }
                 });
                 builder.create().show();

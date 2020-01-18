@@ -18,6 +18,7 @@ import com.example.zq.remindernote.adapter.NoteDataAdapter;
 import com.example.zq.remindernote.db.MessageContent;
 import com.example.zq.remindernote.enumera.WhichDay;
 import com.example.zq.remindernote.utils.DateUtils;
+import com.example.zq.remindernote.utils.LevelUtil;
 import com.example.zq.remindernote.utils.SingleItemClickListener;
 import com.example.zq.remindernote.widget.DividerGridItemDecoration;
 import com.example.zq.remindernote.widget.XEditText;
@@ -113,6 +114,10 @@ public class TomorrowFragment extends BaseFragment {
                         }
                     }
                 }
+
+                List<MessageContent> sortData = LevelUtil.sortContent(mList);
+                mList.clear();
+                mList.addAll(sortData);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
