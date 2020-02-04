@@ -20,7 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:maxLines="2"
+        android:maxLines="1"
+        android:singleLine="true"
         android:textSize="12sp"
         tools:text="2018-11-14-08:06:12"
 
@@ -34,6 +35,7 @@
         android:layout_above="@+id/tv_date"
         android:maxLines="1"
         android:text="重要不紧急"
+        android:layout_marginBottom="6dp"
         android:textSize="12sp"
 
         />

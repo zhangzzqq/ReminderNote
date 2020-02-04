@@ -222,6 +222,9 @@ public class NoteDataAdapter extends RecyclerView.Adapter<NoteDataAdapter.MyView
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Log.e(TAG, "holder.getAdapterPosition()==" + holder.getAdapterPosition());
         MessageContent messageContent = mDatas.get(position);//holder.getAdapterPosition()
+        if(messageContent==null){
+            return;
+        }
         if (messageContent.getIsFinish() == 1) {
             holder.ivFinish.setVisibility(View.VISIBLE);
         } else {

@@ -8,9 +8,14 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.example.zq.remindernote.Base.App;
 import com.example.zq.remindernote.R;
@@ -44,10 +49,16 @@ public class YesterdayFragment extends BaseFragment {
     private View view;
     private RecyclerView mRecyclerView;
     private NoteDataAdapter mAdapter;
-    private XEditText mTvWriteNOte;
     private List<MessageContent> mList = new ArrayList();
     private SimpleDateFormat formatter;
     private Date currentDate;
+
+    private EditText etWriteNote;
+    private Spinner spinnerTitle;
+    private static final String TAG = "TodayFragment";
+    private String mContentLevel = "A";
+    private ImageView mIvPlus;
+
 
     @Nullable
     @Override
@@ -66,7 +77,11 @@ public class YesterdayFragment extends BaseFragment {
     private void initView() {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
-        mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
+        etWriteNote = (EditText) view.findViewById(R.id.et_write_note);
+        spinnerTitle = (Spinner) view.findViewById(R.id.spinner_title);
+        mIvPlus = (ImageView) view.findViewById(R.id.iv_plus);
+
+
         mAdapter = new NoteDataAdapter(getActivity(), mList, WhichDay.getIntDay(WhichDay.YESTERDAY.getValue()));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3,
@@ -138,28 +153,48 @@ public class YesterdayFragment extends BaseFragment {
 
     private void clickAddNote() {
 
-        mTvWriteNOte.setDrawableRightListener(new XEditText.DrawableRightListener() {
+        mIvPlus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDrawableRightClick(View view) {
-
-                String strNote = mTvWriteNOte.getText().toString();
+            public void onClick(View v) {
+                String strNote = etWriteNote.getText().toString();
                 if (!TextUtils.isEmpty(strNote)) {
-                    mAdapter.addData(mAdapter.getItemCount(), strNote, WhichDay.YESTERDAY.getValue());
-                    mTvWriteNOte.setText("");
+                    mAdapter.addData(mAdapter.getItemCount(), strNote, mContentLevel, WhichDay.TODADY.getValue());
+                    etWriteNote.setText("");
                 }
 
             }
         });
 
+
+        spinnerTitle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                Toast.makeText(SpinnerTestActivity.this, "点击了" + arr[position], Toast.LENGTH_SHORT).show();
+
+                mContentLevel = getActivity().getResources().getStringArray(R.array.level)[position];
+                Log.e(TAG, "mContentLevel==" + mContentLevel);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         mRecyclerView.addOnItemTouchListener(new SingleItemClickListener(mRecyclerView, new SingleItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
 
-                MessageContent messageContent = mList.get(position);
+                final EditText et = new EditText(getActivity());
+                final MessageContent messageContent = mList.get(position);
                 String strContent = messageContent.getContent();
+                et.setText(strContent);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("内容详情");
-                builder.setMessage(strContent);
+                builder.setView(et);
+//                builder.setMessage(strContent);
                 builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -169,6 +204,13 @@ public class YesterdayFragment extends BaseFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        String strNote = et.getText().toString();
+                        if (!TextUtils.isEmpty(strNote)) {
+                            messageContent.setContent(strNote);
+                            messageContent.updateAll("contentId = ?", messageContent.getContentId());
+
+                            mAdapter.updateData(mAdapter.getItemCount(), strNote,messageContent.getContentId(), WhichDay.TODADY.getValue());
+                        }
                     }
                 });
                 builder.create().show();
@@ -176,7 +218,6 @@ public class YesterdayFragment extends BaseFragment {
 
             @Override
             public void onItemLongClick(View view, final int position) {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("任务");
                 builder.setMessage("确认已经完成吗？");
@@ -194,9 +235,9 @@ public class YesterdayFragment extends BaseFragment {
                 });
 
                 builder.create().show();
-
             }
         }));
+
 
     }
 
