@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements SaveData {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("选择分享类型");
         builder.setItems(new String[]{"邮件", "短信", "其他"}, new DialogInterface.OnClickListener() {
-
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub

@@ -1,17 +1,21 @@
 package com.example.zq.remindernote.fragment;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.zq.remindernote.R;
 import com.example.zq.remindernote.activities.MainActivity;
@@ -47,12 +51,15 @@ public class HistoryFragment extends BaseFragment {
     private XEditText mTvWriteNOte;
     private List<MessageContent> mList = new ArrayList();
     private SaveData saveData;
-
+    private ImageView ivDelete;
+    private Activity mActivity;
+    private static final String TAG ="HistoryFragment";
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         saveData = (MainActivity) activity;
+        this.mActivity = activity;
     }
 
     @Nullable
@@ -75,6 +82,7 @@ public class HistoryFragment extends BaseFragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
         mTvWriteNOte = (XEditText) view.findViewById(R.id.tv_write_note);
         ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
+        ivDelete = (ImageView) view.findViewById(R.id.ivDelete);
 
         mAdapter = new NoteDataAdapter(getActivity(), mList);
 
@@ -91,6 +99,8 @@ public class HistoryFragment extends BaseFragment {
         initMessageContent();
 
         clickAddNote();
+
+
     }
 
     private void initMessageContent() {
@@ -132,7 +142,14 @@ public class HistoryFragment extends BaseFragment {
             }
         });
 
+        ivDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            deleteContent();
+
+            }
+        });
     }
 
 
@@ -206,5 +223,77 @@ public class HistoryFragment extends BaseFragment {
 
     }
 
+
+
+    private void deleteContent() {
+        Activity activity=null ;
+        if(mActivity!=null){
+            activity = mActivity;
+        }else if(getActivity()!=null){
+            activity = getActivity();
+        }
+        if(activity==null){
+            Log.e(TAG,"HistoryFragment :activity==null");
+            return;
+        }
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(activity);
+        builder.setTitle("提示");
+        builder.setMessage("确认删除所有的记录吗？");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                deleteContentConfirm(true);
+
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+
+    private void deleteContentConfirm(boolean isDelete) {
+        Activity activity=null ;
+        if(mActivity!=null){
+            activity = mActivity;
+        }else if(getActivity()!=null){
+            activity = getActivity();
+        }
+        if(activity==null){
+            Log.e(TAG,"HistoryFragment :activity==null");
+            return;
+        }
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(activity);
+        builder.setTitle("提示");
+        builder.setMessage("删除后不能恢复，是否删除？");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+                if(mList!=null){
+                    mList.clear();
+                }
+
+                if(mAdapter!=null){
+                    mAdapter.notifyDataSetChanged();
+                }
+                LitePal.deleteAll(MessageContent.class);
+
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
 
 }

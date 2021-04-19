@@ -40,14 +40,26 @@
 
     </LinearLayout>
 
+
     <ImageView
         android:id="@+id/ivAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_marginBottom="22dp"
+        android:layout_marginBottom="60dp"
         android:layout_marginRight="22dp"
         android:src="@mipmap/add2" />
+
+
+    <ImageView
+        android:id="@+id/ivDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@mipmap/delete" />
+
 
 
 </FrameLayout>
